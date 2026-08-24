@@ -18,14 +18,27 @@ body{font-family:'Nunito','Century Gothic','Arial Rounded MT Bold',Verdana,sans-
 .header-sub{font-size:11px;color:#55C8E8;letter-spacing:0.5px}
 .header-title{font-size:28px;color:#fff;font-weight:900;line-height:1.15;margin-bottom:6px}
 .header-week{font-size:15px;color:#A8D0E6;font-weight:600}
-.info-strip{display:flex;flex-wrap:wrap;background:#fff;border-bottom:2px solid #E8DDD2;justify-content:center}
-.info-item{flex:1;min-width:200px;padding:16px 20px;border-right:1px solid #E8DDD2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px}
+.info-strip{display:flex;flex-wrap:wrap;background:#fff;border-bottom:2px solid #E8DDD2;justify-content:center;position:relative;z-index:10;overflow:visible}
+.info-item{flex:1;min-width:200px;padding:16px 20px;border-right:1px solid #E8DDD2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;overflow:visible}
 .info-item:last-child{border-right:none}
 .info-icon{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
 .info-label{font-size:10px;color:#9A8E82;text-transform:uppercase;letter-spacing:0.5px;font-weight:700}
 .info-value{font-size:15px;color:#1B4332;font-weight:800;line-height:1.2}
 .info-detail{font-size:11px;color:#5A4D3E;line-height:1.3}
-.std-tag{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;background:#E8F5E9;border:1.5px solid #A5D6A7;color:#2E7D32}
+.std-tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:0.3px;position:relative;cursor:help;transition:transform 0.15s,box-shadow 0.15s}
+.std-tag:hover{transform:scale(1.08);box-shadow:0 2px 8px rgba(0,0,0,0.12)}
+.std-tag .std-tooltip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);width:220px;background:#1B4332;color:#fff;font-size:12px;font-weight:600;line-height:1.45;padding:10px 14px;border-radius:12px;text-align:center;letter-spacing:0;opacity:0;visibility:hidden;pointer-events:none;transition:opacity 0.2s,visibility 0.2s,transform 0.2s;z-index:100;box-shadow:0 4px 16px rgba(0,0,0,0.2)}
+.std-tag .std-tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#1B4332}
+.std-tag:hover .std-tooltip{opacity:1;visibility:visible;transform:translateX(-50%) translateY(-2px)}
+.std-tag .std-tooltip .std-code{display:block;color:#95D5B2;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;font-weight:800}
+.std-tag:nth-child(8n+1){background:#FCE4EC;border:1.5px solid #F48FB1;color:#C2185B}
+.std-tag:nth-child(8n+2){background:#E8F5E9;border:1.5px solid #A5D6A7;color:#2E7D32}
+.std-tag:nth-child(8n+3){background:#E1F5FE;border:1.5px solid #81D4FA;color:#0277BD}
+.std-tag:nth-child(8n+4){background:#FFF8E1;border:1.5px solid #FFD54F;color:#F57F17}
+.std-tag:nth-child(8n+5){background:#F3E5F5;border:1.5px solid #CE93D8;color:#6A1B9A}
+.std-tag:nth-child(8n+6){background:#FFF3E0;border:1.5px solid #FFCC80;color:#E65100}
+.std-tag:nth-child(8n+7){background:#E0F7FA;border:1.5px solid #80DEEA;color:#00838F}
+.std-tag:nth-child(8n+8){background:#F1F8E9;border:1.5px solid #AED581;color:#558B2F}
 .content{padding:24px 28px 36px}
 .art-divider{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 0 18px;font-size:22px;opacity:0.6}
 .card{background:#fff;border:2px solid #E8DDD2;border-radius:18px;margin-bottom:22px;overflow:hidden;box-shadow:0 2px 12px rgba(27,67,50,0.04);transition:box-shadow 0.2s}
@@ -306,7 +319,7 @@ body{font-family:'Nunito','Century Gothic','Arial Rounded MT Bold',Verdana,sans-
   <div class="info-item">
     <div class="info-icon" style="background:linear-gradient(135deg,#F3E5F5,#E1BEE7);"><span class="bounce-emoji">📋</span></div>
     <div class="info-label">Standards</div>
-    <div style="margin-top:4px;"><span class="std-tag">SS.1.CG.1.1</span> <span class="std-tag">SS.1.CG.1.2</span></div>
+    <div style="margin-top:4px;"><span class="std-tag">SS.1.CG.1.1<span class="std-tooltip"><span class="std-code">SS.1.CG.1.1</span>Give examples of rules and laws, and the consequences of breaking them.</span></span> <span class="std-tag">SS.1.CG.1.2<span class="std-tooltip"><span class="std-code">SS.1.CG.1.2</span>Describe the roles and responsibilities of community authority figures.</span></span></div>
   </div>
 </div>
 <div class="content">
