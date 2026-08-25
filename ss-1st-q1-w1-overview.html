@@ -18,8 +18,8 @@ body{font-family:'Nunito','Century Gothic','Arial Rounded MT Bold',Verdana,sans-
 .header-sub{font-size:11px;color:#55C8E8;letter-spacing:0.5px}
 .header-title{font-size:28px;color:#fff;font-weight:900;line-height:1.15;margin-bottom:6px}
 .header-week{font-size:15px;color:#A8D0E6;font-weight:600}
-.info-strip{display:flex;flex-wrap:wrap;background:#fff;border-bottom:2px solid #E8DDD2;justify-content:center}
-.info-item{flex:1;min-width:200px;padding:16px 20px;border-right:1px solid #E8DDD2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px}
+.info-strip{display:flex;flex-wrap:wrap;background:#fff;border-bottom:2px solid #E8DDD2;justify-content:center;position:relative;z-index:10;overflow:visible}
+.info-item{flex:1;min-width:200px;padding:16px 20px;border-right:1px solid #E8DDD2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;overflow:visible}
 .info-item:last-child{border-right:none}
 .info-icon{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
 .info-label{font-size:10px;color:#9A8E82;text-transform:uppercase;letter-spacing:0.5px;font-weight:700}
@@ -58,8 +58,17 @@ body{font-family:'Nunito','Century Gothic','Arial Rounded MT Bold',Verdana,sans-
 .ican-item:last-child{margin-bottom:0}
 .ican-num{width:34px;height:34px;border-radius:50%;color:#fff;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,0.12)}
 .ican-text{font-size:17px;color:#1B4332;line-height:1.6;padding-top:4px}
-.vocab-box{display:flex;flex-wrap:wrap;gap:10px;padding:4px 0}
-.vocab-tag{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#E1F5FE,#B3E5FC);border:2px solid #81D4FA;border-radius:30px;padding:8px 18px;font-size:16px;font-weight:800;color:#0277BD}
+.vocab-grid{display:flex;flex-wrap:wrap;gap:16px;padding:4px 0}
+.vocab-flip{flex:1;min-width:200px;height:160px;perspective:800px;cursor:pointer}
+.vocab-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 0.5s}
+.vocab-flip.flipped .vocab-inner{transform:rotateY(180deg)}
+.vocab-front,.vocab-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;text-align:center}
+.vocab-front{background:linear-gradient(135deg,#E8EAF6,#C5CAE9);border:2px solid #9FA8DA}
+.vocab-back{background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border:2px solid #A5D6A7;transform:rotateY(180deg)}
+.vocab-emoji{font-size:32px;margin-bottom:6px}
+.vocab-word{font-size:18px;font-weight:800;color:#283593;letter-spacing:1px;text-transform:uppercase}
+.vocab-tap{font-size:11px;color:#5C6BC0;margin-top:6px;font-weight:600}
+.vocab-def{font-size:15px;color:#2E7D32;font-weight:700;line-height:1.5}
 .lit-box{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#FFF3E0,#FFE0B2);border:2px solid #FFCC80;border-radius:14px;padding:14px 18px}
 .lit-icon{font-size:36px;flex-shrink:0}
 .lit-title{font-size:16px;font-weight:800;color:#E65100}
@@ -306,7 +315,7 @@ body{font-family:'Nunito','Century Gothic','Arial Rounded MT Bold',Verdana,sans-
   <div class="info-item">
     <div class="info-icon" style="background:linear-gradient(135deg,#F3E5F5,#E1BEE7);"><span class="bounce-emoji">📋</span></div>
     <div class="info-label">Standards</div>
-    <div style="margin-top:4px;"><span class="std-tag">SS.1.CG.1.1</span></div>
+    <div style="margin-top:4px;"><span class="std-tag">SS.1.CG.1.1<span class="std-tooltip"><span class="std-code">SS.1.CG.1.1</span>Give examples of rules and laws, and the consequences of breaking them.</span></span></div>
   </div>
 </div>
 <div class="content">
@@ -363,10 +372,14 @@ body{font-family:'Nunito','Century Gothic','Arial Rounded MT Bold',Verdana,sans-
       <div><div class="card-head-label">Key Term</div><div class="card-head-title">Vocabulary Word</div></div>
     </div>
     <div class="card-body">
-      <div class="vocab-box">
-        <div class="vocab-tag">📜 rules</div>
+      <div class="vocab-grid">
+        <div class="vocab-flip" onclick="this.classList.toggle('flipped')">
+          <div class="vocab-inner">
+            <div class="vocab-front"><div class="vocab-emoji">📜</div><div class="vocab-word">RULES</div><div class="vocab-tap">Tap to reveal definition</div></div>
+            <div class="vocab-back"><div class="vocab-def">Guidelines that tell us how to behave so everyone stays safe, respected, and ready to learn.</div></div>
+          </div>
+        </div>
       </div>
-      <p style="margin-top:14px;font-size:15px;color:#5A4D3E;">Guidelines that tell us how to behave so everyone stays safe, respected, and ready to learn.</p>
     </div>
   </div>
 
