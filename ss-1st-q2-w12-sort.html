@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fall Goods and Services Sort</title>
+<style>
+  :root{
+    --cream:#FFF6E6; --ink:#2B2A28; --card:#FFFFFF;
+    --good-a:#E9A23B; --good-b:#B8650A;
+    --serv-a:#5DB7A5; --serv-b:#1F7A6B;
+    --bad:#E05252;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;min-height:100%;font-family:'Trebuchet MS','Segoe UI',sans-serif;background:var(--cream);color:var(--ink);overflow-x:hidden;}
+  .wrap{max-width:940px;margin:0 auto;padding:18px 16px 32px;}
+  header{text-align:center;margin-bottom:8px;}
+  h1{font-size:clamp(1.5rem,5vw,2.3rem);margin:4px 0 2px;color:#B8650A;}
+  p.sub{margin:0;font-size:1rem;color:#5a5854;}
+  .scoreboard{display:flex;justify-content:center;gap:16px;margin:10px 0 16px;font-weight:bold;flex-wrap:wrap;}
+  .scoreboard span{background:var(--card);border-radius:999px;padding:6px 16px;box-shadow:0 2px 6px rgba(0,0,0,.08);}
+  .tray{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;min-height:110px;align-items:center;}
+  .item{
+    width:136px;min-height:96px;padding:8px;background:var(--card);border:3px solid #eadfc8;border-radius:18px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;
+    cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;box-shadow:0 3px 0 #eadfc8;
+    transition:transform .15s,box-shadow .15s,border-color .15s,opacity .3s;
+  }
+  .item .emoji{font-size:2rem;}
+  .item .text{font-size:.95rem;font-weight:bold;line-height:1.2;}
+  .item:hover{transform:translateY(-2px);}
+  .item.selected{border-color:#B8650A;transform:scale(1.06);box-shadow:0 0 0 4px rgba(184,101,10,.2),0 3px 0 #B8650A;}
+  .item.wrong{animation:shake .4s;border-color:var(--bad);}
+  .item.done{opacity:0;transform:scale(.4);pointer-events:none;}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .hint{text-align:center;color:#7a766d;min-height:1.5em;margin:12px 0;}
+  .bins{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;}
+  .bin{
+    flex:1;min-width:240px;max-width:400px;min-height:200px;border-radius:24px;padding:16px 12px 18px;color:#fff;text-align:center;
+    cursor:pointer;box-shadow:0 6px 0 rgba(0,0,0,.12);display:flex;flex-direction:column;align-items:center;gap:4px;transition:transform .12s;
+  }
+  .bin:active{transform:translateY(3px);}
+  .bin.good{background:linear-gradient(160deg,var(--good-a),var(--good-b));}
+  .bin.service{background:linear-gradient(160deg,var(--serv-a),var(--serv-b));}
+  .bin .icon{font-size:2.2rem;}
+  .bin h2{margin:0;font-size:1.5rem;}
+  .bin .def{font-size:.92rem;line-height:1.25;}
+  .bin.glow{box-shadow:0 0 0 5px rgba(255,255,255,.7),0 6px 0 rgba(0,0,0,.12);}
+  .bin-items{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:8px;}
+  .bin-items span{background:rgba(255,255,255,.25);border-radius:10px;font-size:.88rem;padding:4px 8px;font-weight:bold;}
+  .celebrate{text-align:center;font-weight:bold;font-size:1.25rem;color:#B8650A;margin-top:16px;display:none;}
+  .controls{text-align:center;margin-top:18px;}
+  button.reset{background:var(--ink);color:#fff;border:none;border-radius:999px;padding:10px 22px;font-size:1rem;cursor:pointer;}
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){--cream:#1F1B16;--ink:#F4F0E8;--card:#2B2620;}
+    .item{border-color:#40372b;box-shadow:0 3px 0 #40372b;}
+    p.sub,.hint{color:#bdb6a8;}
+  }
+  :root[data-theme="dark"]{--cream:#1F1B16;--ink:#F4F0E8;--card:#2B2620;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🍂 Fall Goods and Services</h1>
+    <p class="sub">Tap one, then tap Good or Service!</p>
+  </header>
+  <div class="scoreboard">
+    <span id="score">✅ Correct: 0</span>
+    <span id="remaining">🧩 Left: 12</span>
+  </div>
+  <div class="tray" id="tray"></div>
+  <div class="hint" id="hint">Tap one above to pick it up.</div>
+  <div class="bins">
+    <div class="bin good" data-type="good">
+      <div class="icon">🍎</div><h2>Good</h2>
+      <div class="def">A thing you can see and touch</div>
+      <div class="bin-items" id="items-good"></div>
+    </div>
+    <div class="bin service" data-type="service">
+      <div class="icon">🤝</div><h2>Service</h2>
+      <div class="def">A job someone does to help others</div>
+      <div class="bin-items" id="items-service"></div>
+    </div>
+  </div>
+  <div class="celebrate" id="celebrate">🎉 You sorted every fall good and service! 🎉</div>
+  <div class="controls"><button class="reset" id="resetBtn">🔄 Start Over</button></div>
+</div>
+
+<script>
+const ITEMS = [
+  {text:"Apples", emoji:"🍎", type:"good"},
+  {text:"Apple cider", emoji:"🧃", type:"good"},
+  {text:"Corn", emoji:"🌽", type:"good"},
+  {text:"Pumpkin pie", emoji:"🥧", type:"good"},
+  {text:"Warm jacket", emoji:"🧥", type:"good"},
+  {text:"Rake", emoji:"🍂", type:"good"},
+  {text:"Farmer picking crops", emoji:"🧑‍🌾", type:"service"},
+  {text:"Hay wagon driver", emoji:"🚜", type:"service"},
+  {text:"Baker making pies", emoji:"🧑‍🍳", type:"service"},
+  {text:"Cashier at a farm stand", emoji:"💵", type:"service"},
+  {text:"Crossing guard", emoji:"🚸", type:"service"},
+  {text:"Mail carrier", emoji:"📬", type:"service"},
+];
+const NAMES = {good:"a Good", service:"a Service"};
+let selected=null, correct=0;
+const tray=document.getElementById('tray'), hint=document.getElementById('hint'), celebrate=document.getElementById('celebrate');
+
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function render(){
+  tray.innerHTML='';
+  shuffle(ITEMS.map((it,i)=>({...it,id:i}))).forEach(it=>{
+    const el=document.createElement('div');
+    el.className='item'; el.dataset.id=it.id; el.dataset.type=it.type;
+    el.innerHTML=`<div class="emoji">${it.emoji}</div><div class="text">${it.text}</div>`;
+    el.addEventListener('click',()=>pick(el));
+    tray.appendChild(el);
+  });
+}
+function pick(el){
+  if(el.classList.contains('done'))return;
+  document.querySelectorAll('.item.selected').forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected'); selected=el;
+  hint.textContent='Now tap Good or Service!';
+}
+function sortInto(bin){
+  if(!selected){hint.textContent='Pick one from the top first!';return;}
+  const type=bin.dataset.type, el=selected;
+  bin.classList.add('glow'); setTimeout(()=>bin.classList.remove('glow'),300);
+  if(el.dataset.type===type){
+    const badge=document.createElement('span');
+    badge.textContent=el.querySelector('.emoji').textContent+' '+el.querySelector('.text').textContent;
+    document.getElementById('items-'+type).appendChild(badge);
+    el.classList.add('done'); selected=null; correct++;
+    hint.textContent=`Yes! That is ${NAMES[type]}.`;
+    document.getElementById('score').textContent=`✅ Correct: ${correct}`;
+    document.getElementById('remaining').textContent=`🧩 Left: ${ITEMS.length-correct}`;
+    if(correct===ITEMS.length) setTimeout(()=>celebrate.style.display='block',400);
+  } else {
+    el.classList.remove('selected'); el.classList.add('wrong'); selected=null;
+    setTimeout(()=>el.classList.remove('wrong'),400);
+    hint.textContent='Not quite. Can you hold it, or is it a job someone does?';
+  }
+}
+document.querySelectorAll('.bin').forEach(b=>b.addEventListener('click',()=>sortInto(b)));
+document.getElementById('resetBtn').addEventListener('click',()=>{
+  correct=0; selected=null; celebrate.style.display='none';
+  ['good','service'].forEach(t=>document.getElementById('items-'+t).innerHTML='');
+  hint.textContent='Tap one above to pick it up.';
+  document.getElementById('score').textContent='✅ Correct: 0';
+  document.getElementById('remaining').textContent=`🧩 Left: ${ITEMS.length}`;
+  render();
+});
+render();
+</script>
+</body>
+</html>
