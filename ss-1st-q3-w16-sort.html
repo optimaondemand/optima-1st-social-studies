@@ -1,0 +1,518 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Choices Workshop Sort</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800&display=swap">
+<style>
+/* Layout: a workbench with a story card on top, a tray of picture cards, and two big sorting bins below. */
+:root {
+  --bg: #EEF0F6;
+  --surface: #FFFFFF;
+  --fg: #1B2340;
+  --muted: #536079;
+  --line: #CBD0E0;
+  --accent: #4B3FC7;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #DDD9FA;
+  --good: #1F7A4D;
+  --scar-b: #C2415A; --scar-t: #FBE1E6;
+  --plen-b: #1A8C83; --plen-t: #D8F2EF;
+  --chos-b: #34914A; --chos-t: #DDF2E1;
+  --gave-b: #D2801F; --gave-t: #FDEBD0;
+  --display: "Fredoka", "Trebuchet MS", system-ui, sans-serif;
+  --body: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121528; --surface: #1C2140; --fg: #ECEFFA; --muted: #A9B2D1; --line: #333B66;
+    --accent: #9B91FF; --accent-ink: #12102E; --accent-soft: #2B2766; --good: #5FD39A;
+    --scar-b: #F0728A; --scar-t: #3E1A24;
+    --plen-b: #4FC9BE; --plen-t: #103A37;
+    --chos-b: #5ACB74; --chos-t: #123A1E;
+    --gave-b: #F0A64F; --gave-t: #3F2A10;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121528; --surface: #1C2140; --fg: #ECEFFA; --muted: #A9B2D1; --line: #333B66;
+  --accent: #9B91FF; --accent-ink: #12102E; --accent-soft: #2B2766; --good: #5FD39A;
+  --scar-b: #F0728A; --scar-t: #3E1A24;
+  --plen-b: #4FC9BE; --plen-t: #103A37;
+  --chos-b: #5ACB74; --chos-t: #123A1E;
+  --gave-b: #F0A64F; --gave-t: #3F2A10;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--body); font-size: 17px; line-height: 1.45;
+  padding-block: 20px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 980px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+[hidden] { display: none !important; }
+
+header { display: flex; flex-direction: column; gap: 6px; }
+.eyebrow { font-weight: 800; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+h1 { font-family: var(--display); font-weight: 700; font-size: clamp(30px, 6vw, 46px); line-height: 1.05; margin: 0; text-wrap: balance; }
+.sub { margin: 0; max-width: 62ch; color: var(--muted); }
+
+.status { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; background: var(--surface); border: 2px solid var(--line); border-radius: 16px; padding: 12px 16px; }
+.msg { flex: 1 1 280px; min-width: 0; font-weight: 800; font-size: 19px; }
+.msg.good { color: var(--good); }
+.dots { display: flex; gap: 6px; align-items: center; }
+.dot { width: 14px; height: 14px; border-radius: 50%; background: var(--line); }
+.dot.done { background: var(--good); }
+.dot.cur { background: var(--surface); box-shadow: 0 0 0 3px var(--accent); }
+.dot.gap { width: 8px; height: 2px; border-radius: 0; background: transparent; }
+.tools { display: flex; gap: 8px; flex-wrap: wrap; }
+button.tool { font: inherit; font-weight: 800; font-size: 15px; color: var(--fg); background: transparent; border: 2px solid var(--line); border-radius: 99px; padding: 6px 14px; cursor: pointer; }
+button.tool[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+button.tool:hover { border-color: var(--accent); }
+
+.play { display: flex; flex-direction: column; gap: 16px; }
+.scene { background: var(--surface); border: 2px solid var(--line); border-radius: 18px; padding: 16px 18px; display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
+.scene-main { flex: 1 1 300px; min-width: 0; }
+.part { font-weight: 800; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+.prompt { font-family: var(--display); font-weight: 500; font-size: clamp(19px, 3.4vw, 24px); line-height: 1.3; margin: 0; }
+button.read { font: inherit; font-weight: 800; font-size: 15px; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 99px; padding: 8px 18px; cursor: pointer; }
+
+.tray { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; min-height: 130px; background: var(--surface); border: 2px dashed var(--line); border-radius: 18px; padding: 14px; }
+.card { width: 150px; padding: 12px 8px 10px; text-align: center; background: var(--bg); border: 2px solid var(--line); border-radius: 14px; cursor: grab; user-select: none; -webkit-user-select: none; touch-action: none; transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease; }
+.card:hover { border-color: var(--accent); }
+.card .e { font-size: 42px; line-height: 1.1; display: block; }
+.card .l { display: block; margin-top: 6px; font-weight: 800; font-size: 15px; line-height: 1.25; }
+.card.sel { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); transform: translateY(-4px); }
+.card.shake { animation: shake .4s; }
+.ghost { position: fixed; z-index: 1000; pointer-events: none; opacity: .92; transform: translate(-50%, -60%) rotate(-4deg) scale(1.06); box-shadow: 0 10px 24px rgba(0,0,0,.25); }
+.tray-empty { align-self: center; font-weight: 800; color: var(--muted); }
+
+.bins { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.bin { min-width: 0; min-height: 200px; display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 3px solid var(--bc); background: var(--bt); border-radius: 18px; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease; }
+.bin[data-bin="scarce"] { --bc: var(--scar-b); --bt: var(--scar-t); }
+.bin[data-bin="plenty"] { --bc: var(--plen-b); --bt: var(--plen-t); }
+.bin[data-bin="chose"] { --bc: var(--chos-b); --bt: var(--chos-t); }
+.bin[data-bin="gave"] { --bc: var(--gave-b); --bt: var(--gave-t); }
+.bins.armed .bin { border-style: dashed; }
+.bin.over { transform: scale(1.03); box-shadow: 0 0 0 5px var(--bc); }
+.bin-head { display: flex; align-items: flex-start; gap: 8px; }
+.bin-icon { font-size: 34px; line-height: 1; }
+.bin-title { display: flex; flex-direction: column; min-width: 0; }
+.bin-name { font-family: var(--display); font-weight: 700; font-size: 22px; line-height: 1.05; }
+.bin-sub { font-weight: 700; font-size: 14px; color: var(--muted); line-height: 1.25; }
+.bin-count { margin-left: auto; font-weight: 800; font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.pile { display: flex; flex-wrap: wrap; gap: 6px; align-content: flex-start; }
+.chip { display: flex; align-items: center; gap: 5px; background: var(--surface); border-radius: 10px; padding: 4px 9px 4px 6px; font-weight: 800; font-size: 14px; line-height: 1.2; animation: pop .35s ease; }
+.chip span:first-child { font-size: 24px; line-height: 1; }
+
+.after { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; background: var(--surface); border: 3px solid var(--good); border-radius: 18px; padding: 14px 18px; }
+.after p { margin: 0; flex: 1 1 260px; min-width: 0; font-weight: 800; font-size: 19px; }
+button.big { font: inherit; font-weight: 800; font-size: 18px; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 99px; padding: 10px 26px; cursor: pointer; }
+
+.finish { background: var(--surface); border: 3px solid var(--good); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.finish h2 { font-family: var(--display); font-size: 28px; margin: 0; }
+.words { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.word { background: var(--bg); border-radius: 14px; padding: 12px 14px; min-width: 0; }
+.word b { font-family: var(--display); font-size: 22px; display: block; }
+.word span { color: var(--muted); font-weight: 700; }
+
+.fall { position: fixed; top: -40px; z-index: 900; font-size: 30px; pointer-events: none; animation: fall linear forwards; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+@keyframes shake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(6px); } }
+@keyframes pop { 0% { transform: scale(.4); } 70% { transform: scale(1.15); } 100% { transform: scale(1); } }
+@keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .card.shake, .chip { animation: none; }
+  .card, .bin { transition: none; }
+  .fall { display: none; }
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Workshop Wonders &middot; Social Studies</div>
+    <h1>Choices Workshop Sort</h1>
+    <p class="sub">The shoemaker, the elves, and the Velveteen Rabbit all have to make choices. Sort the pictures to find out why, and what each choice costs.</p>
+  </header>
+
+  <div class="status">
+    <div class="msg" id="msg" role="status" aria-live="polite">Tap a picture, then tap the bin where it belongs.</div>
+    <div class="dots" id="dots" aria-hidden="true"></div>
+    <div class="tools">
+      <button class="tool" id="sound" type="button" aria-pressed="true">Read aloud: on</button>
+      <button class="tool" id="restart" type="button">Start over</button>
+    </div>
+  </div>
+
+  <div class="play" id="play">
+    <section class="scene" aria-label="Story">
+      <div class="scene-main">
+        <div class="part" id="part"></div>
+        <p class="prompt" id="prompt"></p>
+      </div>
+      <button class="read" id="read" type="button">Read it to me</button>
+    </section>
+
+    <div class="tray" id="tray" aria-label="Picture cards"></div>
+    <div class="bins" id="bins"></div>
+
+    <div class="after" id="after" hidden>
+      <p id="afterText"></p>
+      <button class="big" id="next" type="button">Next</button>
+    </div>
+  </div>
+
+  <div class="finish" id="finish" hidden>
+    <h2>You did it! Now you know two big words.</h2>
+    <div class="words">
+      <div class="word"><b>Scarcity</b><span>There is not enough of something for everyone to have all they want. So people must make choices.</span></div>
+      <div class="word"><b>Opportunity cost</b><span>What you give up when you choose one thing instead of another.</span></div>
+    </div>
+    <div><button class="big" id="again" type="button">Play again</button></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var B = {
+    scarce: { id: "scarce", name: "Scarce", sub: "Not enough for everyone", icon: "😟" },
+    plenty: { id: "plenty", name: "Plenty", sub: "Enough for everyone", icon: "😊" },
+    chose:  { id: "chose",  name: "I chose", sub: "What was picked", icon: "✅" },
+    gave:   { id: "gave",   name: "I gave up", sub: "What was left out", icon: "👋" }
+  };
+
+  var ROUNDS = [
+    {
+      part: "Part 1 of 2 · Is there enough?",
+      prompt: "Something is scarce when there is not enough for everyone to have all they want. Sort each picture.",
+      bins: [B.scarce, B.plenty],
+      after: "Scarce means not enough for everything we want. That is why people have to make choices.",
+      items: [
+        { id: "a", e: "👞", l: "1 piece of leather, but the shoemaker wants 3 pairs of shoes", bin: "scarce", hint: "He wants more shoes than the leather can make." },
+        { id: "b", e: "🍪", l: "2 cookies for 4 kids", bin: "scarce", hint: "Count the cookies and count the kids." },
+        { id: "c", e: "🛝", l: "1 swing and 5 kids who want it", bin: "scarce", hint: "Not everyone can swing at once." },
+        { id: "d", e: "🪙", l: "1 coin, but you want a toy and a snack", bin: "scarce", hint: "One coin cannot buy both." },
+        { id: "e", e: "💨", l: "Air to breathe outside", bin: "plenty", hint: "Everyone can breathe all they want." },
+        { id: "f", e: "🏖️", l: "Sand at the beach", bin: "plenty", hint: "There is more sand than anyone can dig up." },
+        { id: "g", e: "🍎", l: "A tree full of apples for 2 kids", bin: "plenty", hint: "There are more apples than the kids can eat." },
+        { id: "h", e: "⭐", l: "Stars in the night sky", bin: "plenty", hint: "No one can run out of stars." }
+      ]
+    },
+    {
+      part: "Part 2 of 2 · What did you give up? · Story 1 of 6",
+      prompt: "The shoemaker has only one piece of leather. He chooses to make boots. He does not make slippers.",
+      bins: [B.chose, B.gave],
+      after: "The slippers are the opportunity cost. It is what the shoemaker gave up to get the boots.",
+      items: [
+        { id: "a", e: "🥾", l: "boots", bin: "chose" },
+        { id: "b", e: "🥿", l: "slippers", bin: "gave" }
+      ]
+    },
+    {
+      part: "Part 2 of 2 · What did you give up? · Story 2 of 6",
+      prompt: "The elves have only one night to work. They choose to make shoes. They do not make hats.",
+      bins: [B.chose, B.gave],
+      after: "The hats are the opportunity cost. Time is scarce, so the elves gave up the hats to make shoes.",
+      items: [
+        { id: "a", e: "👟", l: "shoes", bin: "chose" },
+        { id: "b", e: "🎩", l: "hats", bin: "gave" }
+      ]
+    },
+    {
+      part: "Part 2 of 2 · What did you give up? · Story 3 of 6",
+      prompt: "A girl has only one coin. She chooses to buy a toy rabbit. She does not buy an apple.",
+      bins: [B.chose, B.gave],
+      after: "The apple is the opportunity cost. One coin could not buy both, so she gave up the apple.",
+      items: [
+        { id: "a", e: "🐰", l: "toy rabbit", bin: "chose" },
+        { id: "b", e: "🍎", l: "apple", bin: "gave" }
+      ]
+    },
+    {
+      part: "Part 2 of 2 · What did you give up? · Story 4 of 6",
+      prompt: "A boy can take only one toy to bed. He chooses the Velveteen Rabbit. He leaves the toy train on the shelf.",
+      bins: [B.chose, B.gave],
+      after: "The toy train is the opportunity cost. The boy gave it up for the night to have the rabbit.",
+      items: [
+        { id: "a", e: "🐇", l: "Velveteen Rabbit", bin: "chose" },
+        { id: "b", e: "🚂", l: "toy train", bin: "gave" }
+      ]
+    },
+    {
+      part: "Part 2 of 2 · What did you give up? · Story 5 of 6",
+      prompt: "The shoemaker's wife has only a little cloth. She chooses to sew tiny coats for the elves. She does not sew a blanket.",
+      bins: [B.chose, B.gave],
+      after: "The blanket is the opportunity cost. There was not enough cloth for both, so she gave up the blanket.",
+      items: [
+        { id: "a", e: "🧥", l: "tiny coats", bin: "chose" },
+        { id: "b", e: "🛏️", l: "blanket", bin: "gave" }
+      ]
+    },
+    {
+      part: "Part 2 of 2 · What did you give up? · Story 6 of 6",
+      prompt: "At recess there is time for only one thing. Mia chooses to play tag. She does not go down the slide.",
+      bins: [B.chose, B.gave],
+      after: "The slide is Mia's opportunity cost. Recess time is scarce, so she gave up the slide to play tag.",
+      items: [
+        { id: "a", e: "🏃", l: "tag", bin: "chose" },
+        { id: "b", e: "🛝", l: "slide", bin: "gave" }
+      ]
+    }
+  ];
+
+  var play = document.getElementById("play");
+  var tray = document.getElementById("tray");
+  var binsEl = document.getElementById("bins");
+  var msg = document.getElementById("msg");
+  var dotsEl = document.getElementById("dots");
+  var partEl = document.getElementById("part");
+  var promptEl = document.getElementById("prompt");
+  var afterEl = document.getElementById("after");
+  var afterText = document.getElementById("afterText");
+  var nextBtn = document.getElementById("next");
+  var finish = document.getElementById("finish");
+  var soundBtn = document.getElementById("sound");
+  var soundOn = true;
+  var idx = 0, round = null, placed = {}, selected = null, drag = null;
+
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function item(id) { for (var i = 0; i < round.items.length; i++) if (round.items[i].id === id) return round.items[i]; }
+  function say(text) {
+    try {
+      if (!soundOn || !("speechSynthesis" in window)) return;
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.rate = 0.9;
+      window.speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+  function setMsg(t, good) { msg.textContent = t; msg.className = "msg" + (good ? " good" : ""); }
+
+  function buildDots() {
+    dotsEl.innerHTML = "";
+    for (var i = 0; i < ROUNDS.length; i++) {
+      var d = document.createElement("span");
+      d.className = "dot" + (i < idx ? " done" : i === idx ? " cur" : "");
+      dotsEl.appendChild(d);
+      if (i === 0) { var g = document.createElement("span"); g.className = "dot gap"; dotsEl.appendChild(g); }
+    }
+  }
+
+  function countFor(binId) { return round.items.filter(function (it) { return it.bin === binId; }).length; }
+
+  function buildBins() {
+    binsEl.innerHTML = "";
+    binsEl.classList.remove("armed");
+    round.bins.forEach(function (b) {
+      var d = document.createElement("div");
+      d.className = "bin";
+      d.dataset.bin = b.id;
+      d.setAttribute("role", "button");
+      d.tabIndex = 0;
+      d.setAttribute("aria-label", b.name + " bin. " + b.sub);
+      d.innerHTML = '<div class="bin-head"><span class="bin-icon" aria-hidden="true">' + b.icon + '</span><span class="bin-title"><span class="bin-name">' + b.name + '</span><span class="bin-sub">' + b.sub + '</span></span><span class="bin-count" id="bc-' + b.id + '">0/' + countFor(b.id) + '</span></div><div class="pile" id="pile-' + b.id + '"></div>';
+      binsEl.appendChild(d);
+    });
+  }
+
+  function buildTray() {
+    tray.innerHTML = "";
+    shuffle(round.items).forEach(function (it) {
+      var c = document.createElement("div");
+      c.className = "card";
+      c.dataset.id = it.id;
+      c.setAttribute("role", "button");
+      c.tabIndex = 0;
+      c.setAttribute("aria-label", it.l);
+      c.innerHTML = '<span class="e" aria-hidden="true">' + it.e + '</span><span class="l">' + it.l + '</span>';
+      tray.appendChild(c);
+    });
+  }
+
+  function cardEl(id) { return tray.querySelector('.card[data-id="' + id + '"]'); }
+
+  function loadRound(i, speak) {
+    idx = i; round = ROUNDS[i]; placed = {}; selected = null;
+    afterEl.hidden = true;
+    partEl.textContent = round.part;
+    promptEl.textContent = round.prompt;
+    buildDots(); buildBins(); buildTray();
+    setMsg(i === 0 ? "Tap a picture, then tap the bin where it belongs." : "Who chose? What was given up? Sort the two pictures.");
+    if (speak) say(round.prompt);
+  }
+
+  function select(id) {
+    if (selected) { var o = cardEl(selected); if (o) o.classList.remove("sel"); }
+    selected = id;
+    var c = cardEl(id);
+    if (c) c.classList.add("sel");
+    binsEl.classList.add("armed");
+    var it = item(id);
+    setMsg("Which bin does “" + it.l + "” go in?");
+    say(it.l);
+  }
+  function clearSel() {
+    if (selected) { var c = cardEl(selected); if (c) c.classList.remove("sel"); }
+    selected = null;
+    binsEl.classList.remove("armed");
+  }
+
+  function updateCounts() {
+    round.bins.forEach(function (b) {
+      var k = 0;
+      for (var id in placed) if (item(id).bin === b.id) k++;
+      document.getElementById("bc-" + b.id).textContent = k + "/" + countFor(b.id);
+    });
+  }
+
+  function attempt(id, binId) {
+    var it = item(id), c = cardEl(id);
+    if (!it || !c || placed[id]) return;
+    var part1 = round.items.length > 2;
+    if (it.bin === binId) {
+      placed[id] = true;
+      clearSel();
+      c.remove();
+      var chip = document.createElement("div");
+      chip.className = "chip";
+      chip.innerHTML = '<span aria-hidden="true">' + it.e + '</span><span>' + it.l + '</span>';
+      document.getElementById("pile-" + binId).appendChild(chip);
+      var t;
+      if (part1) t = "Yes! " + (binId === "scarce" ? "That is scarce. There is not enough for everyone." : "That is plenty. There is enough for everyone.");
+      else t = "Yes! " + (binId === "chose" ? "The " + it.l + " is what was chosen." : "The " + it.l + " is what was given up.");
+      setMsg(t, true); say(t);
+      updateCounts();
+      if (Object.keys(placed).length === round.items.length) {
+        tray.innerHTML = '<div class="tray-empty">All sorted!</div>';
+        afterText.textContent = round.after;
+        nextBtn.textContent = idx === ROUNDS.length - 1 ? "See what I learned" : "Next";
+        afterEl.hidden = false;
+        say(round.after);
+      }
+    } else {
+      c.classList.remove("shake"); void c.offsetWidth; c.classList.add("shake");
+      var h = it.hint || (it.bin === "chose" ? "Read the story again. This is the one that was picked." : "Read the story again. This is the one that was left out.");
+      var t2 = "Not quite. " + h + " Try the other bin!";
+      setMsg(t2); say(t2);
+    }
+  }
+
+  function confetti() {
+    var faces = ["👟", "🧵", "⭐", "🐇", "🪙", "✂️"];
+    for (var i = 0; i < 24; i++) {
+      var s = document.createElement("span");
+      s.className = "fall";
+      s.textContent = faces[i % faces.length];
+      s.style.left = (Math.random() * 96) + "vw";
+      s.style.animationDuration = (2.4 + Math.random() * 2.2) + "s";
+      s.style.animationDelay = (Math.random() * 0.8) + "s";
+      document.body.appendChild(s);
+      (function (el) { setTimeout(function () { el.remove(); }, 6000); })(s);
+    }
+  }
+
+  function finishAll() {
+    play.hidden = true;
+    finish.hidden = false;
+    dotsEl.innerHTML = "";
+    for (var i = 0; i < ROUNDS.length; i++) {
+      var d = document.createElement("span"); d.className = "dot done"; dotsEl.appendChild(d);
+      if (i === 0) { var g = document.createElement("span"); g.className = "dot gap"; dotsEl.appendChild(g); }
+    }
+    setMsg("All done! Great thinking.", true);
+    say("You did it! Scarcity means there is not enough for everyone. Opportunity cost is what you give up when you choose.");
+    confetti();
+  }
+
+  function restart() {
+    finish.hidden = true;
+    play.hidden = false;
+    loadRound(0, false);
+  }
+
+  tray.addEventListener("pointerdown", function (e) {
+    var card = e.target.closest(".card");
+    if (!card || e.button > 0) return;
+    drag = { id: card.dataset.id, card: card, x: e.clientX, y: e.clientY, moved: false, ghost: null };
+  });
+  window.addEventListener("pointermove", function (e) {
+    if (!drag) return;
+    if (!drag.moved && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) > 8) {
+      drag.moved = true;
+      select(drag.id);
+      drag.ghost = drag.card.cloneNode(true);
+      drag.ghost.classList.add("ghost");
+      drag.ghost.classList.remove("sel");
+      document.body.appendChild(drag.ghost);
+      drag.card.style.opacity = ".35";
+    }
+    if (drag.moved) {
+      drag.ghost.style.left = e.clientX + "px";
+      drag.ghost.style.top = e.clientY + "px";
+      var over = document.elementFromPoint(e.clientX, e.clientY);
+      var bin = over && over.closest ? over.closest(".bin") : null;
+      Array.prototype.forEach.call(binsEl.children, function (b) { b.classList.toggle("over", b === bin); });
+    }
+  });
+  function endDrag(e, cancelled) {
+    if (!drag) return;
+    var d = drag; drag = null;
+    d.card.style.opacity = "";
+    if (d.ghost) d.ghost.remove();
+    Array.prototype.forEach.call(binsEl.children, function (b) { b.classList.remove("over"); });
+    if (cancelled) return;
+    if (d.moved) {
+      var over = document.elementFromPoint(e.clientX, e.clientY);
+      var bin = over && over.closest ? over.closest(".bin") : null;
+      if (bin) attempt(d.id, bin.dataset.bin);
+    } else {
+      select(d.id);
+    }
+  }
+  window.addEventListener("pointerup", function (e) { endDrag(e, false); });
+  window.addEventListener("pointercancel", function (e) { endDrag(e, true); });
+
+  tray.addEventListener("keydown", function (e) {
+    var card = e.target.closest(".card");
+    if (card && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); select(card.dataset.id); }
+  });
+  binsEl.addEventListener("click", function (e) {
+    var bin = e.target.closest(".bin");
+    if (!bin) return;
+    if (selected) attempt(selected, bin.dataset.bin);
+    else setMsg("First tap a picture, then tap a bin.");
+  });
+  binsEl.addEventListener("keydown", function (e) {
+    var bin = e.target.closest(".bin");
+    if (bin && (e.key === "Enter" || e.key === " ")) {
+      e.preventDefault();
+      if (selected) attempt(selected, bin.dataset.bin);
+      else setMsg("First choose a picture, then choose a bin.");
+    }
+  });
+
+  nextBtn.addEventListener("click", function () {
+    if (idx < ROUNDS.length - 1) loadRound(idx + 1, true);
+    else finishAll();
+  });
+  document.getElementById("read").addEventListener("click", function () {
+    var was = soundOn; soundOn = true; say(round.prompt); soundOn = was;
+  });
+  soundBtn.addEventListener("click", function () {
+    soundOn = !soundOn;
+    soundBtn.setAttribute("aria-pressed", String(soundOn));
+    soundBtn.textContent = "Read aloud: " + (soundOn ? "on" : "off");
+    if (!soundOn) { try { window.speechSynthesis.cancel(); } catch (err) {} }
+  });
+  document.getElementById("restart").addEventListener("click", restart);
+  document.getElementById("again").addEventListener("click", restart);
+
+  loadRound(0, false);
+})();
+</script>
+
+</body></html>
